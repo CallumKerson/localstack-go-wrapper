@@ -46,7 +46,7 @@ func SQSSession() *session.Session {
 }
 
 func checkError(err error) {
-    if err != nil {
+	if err != nil {
 		panic(fmt.Sprintf("Unable to create AWS session, %v", err))
 	}
 }

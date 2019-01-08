@@ -3,12 +3,11 @@ package localstack
 import (
 	"testing"
 
-	"github.com/CallumKerrEdwards/go/container/receipt/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestS3Session(t *testing.T) {
 	//given
-	asrt := assert.NewAssert(t)
 	expectedEndpoint := "http://localhost:4572"
 
 	//when
@@ -16,12 +15,12 @@ func TestS3Session(t *testing.T) {
 
 	//then
 	actualEndpoint := *sess.Config.Endpoint
-	asrt.Equal(actualEndpoint, expectedEndpoint, "Endpoints")
+	assert.Equal(t, expectedEndpoint, actualEndpoint,
+		"session endpoint should be localstack default for S3")
 }
 
 func TestSNSSession(t *testing.T) {
 	//given
-	asrt := assert.NewAssert(t)
 	expectedEndpoint := "http://localhost:4575"
 
 	//when
@@ -29,12 +28,12 @@ func TestSNSSession(t *testing.T) {
 
 	//then
 	actualEndpoint := *sess.Config.Endpoint
-	asrt.Equal(actualEndpoint, expectedEndpoint, "Endpoints")
+	assert.Equal(t, expectedEndpoint, actualEndpoint,
+		"session endpoint should be localstack default for SNS")
 }
 
 func TestSQSSession(t *testing.T) {
 	//given
-	asrt := assert.NewAssert(t)
 	expectedEndpoint := "http://localhost:4576"
 
 	//when
@@ -42,5 +41,6 @@ func TestSQSSession(t *testing.T) {
 
 	//then
 	actualEndpoint := *sess.Config.Endpoint
-	asrt.Equal(actualEndpoint, expectedEndpoint, "Endpoints")
+	assert.Equal(t, expectedEndpoint, actualEndpoint,
+		"session endpoint should be localstack default for SQS")
 }
