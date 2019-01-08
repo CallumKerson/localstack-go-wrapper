@@ -12,6 +12,7 @@ var testCredentials = credentials.NewStaticCredentials("AKID", "SECRET", "SESSIO
 var testRegion = aws.String("eu-west-1")
 var disableSSL = aws.Bool(true)
 
+// S3Session provides an AWS session suitable for use with S3 from LocalStack
 func S3Session() *session.Session {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: testCredentials,
@@ -23,6 +24,7 @@ func S3Session() *session.Session {
 	return sess
 }
 
+// SNSSession provides an AWS session suitable for use with SNS from LocalStack
 func SNSSession() *session.Session {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: testCredentials,
@@ -34,6 +36,7 @@ func SNSSession() *session.Session {
 	return sess
 }
 
+// SQSSession provides an AWS session suitable for use with SQS from LocalStack
 func SQSSession() *session.Session {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: testCredentials,

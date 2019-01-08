@@ -13,8 +13,10 @@ import (
 	"github.com/docker/go-connections/nat"
 )
 
+// ImageName provides the docker image name for LocalStack
 const ImageName = "localstack/localstack"
 
+// Start pulls, creates and starts a LocalStack container then returning the id of the container
 func Start() string {
 	ctx := context.Background()
 	dockerClient, err := client.NewEnvClient()
@@ -75,6 +77,7 @@ func Start() string {
 	return resp.ID
 }
 
+// Stop stop the docker container identified by the id string
 func Stop(id string) {
 	ctx := context.Background()
 	dockerClient, err := client.NewEnvClient()
