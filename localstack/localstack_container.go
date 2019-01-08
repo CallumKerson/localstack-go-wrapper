@@ -15,6 +15,14 @@ import (
 
 const ImageName = "localstack/localstack"
 
+var dockerClient *client.Client = func() {
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+	return cli
+}
+
 func Start() string {
 	ctx := context.Background()
 	dockerClient, err := client.NewEnvClient()
