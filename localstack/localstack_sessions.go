@@ -19,9 +19,7 @@ func S3Session() *session.Session {
 		Endpoint:    aws.String("http://localhost:4572"),
 		DisableSSL:  disableSSL,
 	})
-	if err != nil {
-		panic(fmt.Sprintf("Unable to create AWS S3 session, %v", err))
-	}
+	checkError(err)
 	return sess
 }
 
@@ -32,9 +30,7 @@ func SNSSession() *session.Session {
 		Endpoint:    aws.String("http://localhost:4575"),
 		DisableSSL:  disableSSL,
 	})
-	if err != nil {
-		panic(fmt.Sprintf("Unable to create AWS SNS session, %v", err))
-	}
+	checkError(err)
 	return sess
 }
 
@@ -45,8 +41,12 @@ func SQSSession() *session.Session {
 		Endpoint:    aws.String("http://localhost:4576"),
 		DisableSSL:  disableSSL,
 	})
-	if err != nil {
-		panic(fmt.Sprintf("Unable to create AWS SQS session, %v", err))
-	}
+	checkError(err)
 	return sess
+}
+
+func checkError(err error) {
+    if err != nil {
+		panic(fmt.Sprintf("Unable to create AWS session, %v", err))
+	}
 }
