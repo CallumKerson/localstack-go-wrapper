@@ -17,21 +17,21 @@ import (
 const ImageName = "localstack/localstack"
 
 // Start pulls, creates and starts a LocalStack container then returning the id of the container
-func Start() string {
+func Start() (string, error) {
 	ctx := context.Background()
 	dockerClient, err := client.NewEnvClient()
 	if err != nil {
-		panic(err)
+		return "nil", err
 	}
 
 	normalized, err := reference.ParseNormalizedNamed(ImageName)
 	if err != nil {
-		panic(err)
+		return "nil", err
 	}
 
 	out, err := dockerClient.ImagePull(ctx, normalized.String(), types.ImagePullOptions{})
 	if err != nil {
-		panic(err)
+		return "nil", err
 	}
 	io.Copy(os.Stdout, out)
 
@@ -65,26 +65,27 @@ func Start() string {
 
 	resp, err := dockerClient.ContainerCreate(ctx, containerConfig, hostConfig, nil, "")
 	if err != nil {
-		panic(err)
+		return "nil", err
 	}
 
 	if err := dockerClient.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		panic(err)
+		return "nil", err
 	}
 
 	duration := time.Second * 5
 	time.Sleep(duration)
-	return resp.ID
+	return resp.ID, nil
 }
 
 // Stop stop the docker container identified by the id string
-func Stop(id string) {
+func Stop(id string) error {
 	ctx := context.Background()
 	dockerClient, err := client.NewEnvClient()
 	if err != nil {
-		panic(err)
+		return err
 	}
 	if err := dockerClient.ContainerStop(ctx, id, nil); err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
