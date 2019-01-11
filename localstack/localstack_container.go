@@ -33,7 +33,9 @@ func Start() (string, error) {
 	if err != nil {
 		return "nil", err
 	}
-	io.Copy(os.Stdout, out)
+	if _, err = io.Copy(os.Stdout, out); err != nil {
+		return "nil", err
+	}
 
 	containerConfig := &container.Config{
 		Image: ImageName,
