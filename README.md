@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/CallumKerrEdwards/localstack-go-wrapper.svg?branch=master)](https://travis-ci.org/CallumKerrEdwards/localstack-go-wrapper)
+
 # localstack-go-wrapper
 A wrapper around [LocalStack](https://github.com/localstack/localstack) for integration testing in Go.
 
