@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sns"
-	"github.com/callumkerredwards/localstack-go-wrapper/localstack"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,7 +16,7 @@ func TestLocalstackSNSStarted(t *testing.T) {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: testCredentials,
 		Region:      testRegion,
-		Endpoint:    aws.String("http://localhost:" + localstack.SNSPort),
+		Endpoint:    aws.String("http://localhost:4575"),
 		DisableSSL:  disableSSL,
 	})
 	if err != nil {

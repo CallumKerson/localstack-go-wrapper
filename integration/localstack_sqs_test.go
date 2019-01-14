@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/callumkerredwards/localstack-go-wrapper/localstack"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,7 +16,7 @@ func TestLocalstackSQSStarted(t *testing.T) {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: testCredentials,
 		Region:      testRegion,
-		Endpoint:    aws.String("http://localhost:" + localstack.SQSPort),
+		Endpoint:    aws.String("http://localhost:4576"),
 		DisableSSL:  disableSSL,
 	})
 	if err != nil {
