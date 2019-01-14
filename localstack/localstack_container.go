@@ -16,6 +16,15 @@ import (
 // ImageName provides the docker image name for LocalStack
 const ImageName = "localstack/localstack"
 
+// S3Port provides the port that the LocalStack S3 service is running on
+const S3Port = "4572"
+
+// SNSPort provides the port that the LocalStack SNS service is running on
+const SNSPort = "4575"
+
+// SQSPort provides the port that the LocalStack SQS service is running on
+const SQSPort = "4576"
+
 // Start pulls, creates and starts a LocalStack container then returning the id of the container
 func Start() (string, error) {
 	ctx := context.Background()
@@ -47,19 +56,19 @@ func Start() (string, error) {
 			"4572/tcp": []nat.PortBinding{
 				{
 					HostIP:   "0.0.0.0",
-					HostPort: "4572",
+					HostPort: S3Port,
 				},
 			},
 			"4575/tcp": []nat.PortBinding{
 				{
 					HostIP:   "0.0.0.0",
-					HostPort: "4575",
+					HostPort: SNSPort,
 				},
 			},
 			"4576/tcp": []nat.PortBinding{
 				{
 					HostIP:   "0.0.0.0",
-					HostPort: "4576",
+					HostPort: SQSPort,
 				},
 			},
 		},
@@ -81,12 +90,11 @@ func Start() (string, error) {
 
 // Stop stop the docker container identified by the id string
 func Stop(id string) error {
-	ctx := context.Background()
 	dockerClient, err := client.NewEnvClient()
 	if err != nil {
 		return err
 	}
-	if err := dockerClient.ContainerStop(ctx, id, nil); err != nil {
+	if err := dockerClient.ContainerStop(context.Background(), id, nil); err != nil {
 		return err
 	}
 	return nil
