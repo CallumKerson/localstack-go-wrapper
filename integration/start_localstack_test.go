@@ -9,7 +9,7 @@ import (
 )
 
 // s3Port is a custom port
-//const s3Port int = 5437
+const s3Port int = 3572
 
 func TestMain(m *testing.M) {
 	os.Exit(testMainWrapper(m))
@@ -19,7 +19,7 @@ func testMainWrapper(m *testing.M) int {
 	if !testing.Short() {
 		s3Config := &localstack.ServiceConfig{
 			Service: localstack.S3,
-			//			Port:    s3Port,
+			Port:    s3Port,
 		}
 		sqsConfig := &localstack.ServiceConfig{
 			Service: localstack.SQS,
