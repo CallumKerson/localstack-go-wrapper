@@ -4,6 +4,8 @@ import (
 	"context"
 	"io"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/docker/distribution/reference"
@@ -13,89 +15,130 @@ import (
 	"github.com/docker/go-connections/nat"
 )
 
-// ImageName provides the docker image name for LocalStack
+//ImageName provides the docker image name for LocalStack
 const ImageName = "localstack/localstack"
 
-// S3Port provides the port that the LocalStack S3 service is running on
-const S3Port = "4572"
+// Localstack provides methods for starting and stoping a docker container of the latest
+// LocalStack image
+type Localstack struct {
+	ContainerID   string
+	dockerClient  *client.Client
+	dockerContext context.Context
+}
 
-// SNSPort provides the port that the LocalStack SNS service is running on
-const SNSPort = "4575"
+// New pulls the latest LocalStack image, and creates a new container. It returns a new
+// instance of LocalStack
+func New(cfgs ...*ServiceConfig) (*Localstack, error) {
 
-// SQSPort provides the port that the LocalStack SQS service is running on
-const SQSPort = "4576"
-
-// Start pulls, creates and starts a LocalStack container then returning the id of the container
-func Start() (string, error) {
-	ctx := context.Background()
 	dockerClient, err := client.NewEnvClient()
 	if err != nil {
-		return "nil", err
+		return nil, err
+	}
+	if err = pullImage(dockerClient, ImageName); err != nil {
+		return nil, err
 	}
 
-	normalized, err := reference.ParseNormalizedNamed(ImageName)
+	containerCfg := containerConfig(ImageName, cfgs)
+	hostCfg, err := hostConfig(cfgs)
 	if err != nil {
-		return "nil", err
+		return nil, err
 	}
 
-	out, err := dockerClient.ImagePull(ctx, normalized.String(), types.ImagePullOptions{})
+	ctx := context.Background()
+	resp, err := dockerClient.ContainerCreate(ctx, containerCfg, hostCfg, nil, "")
 	if err != nil {
-		return "nil", err
-	}
-	if _, err = io.Copy(os.Stdout, out); err != nil {
-		return "nil", err
+		return nil, err
 	}
 
-	containerConfig := &container.Config{
-		Image: ImageName,
-		Env:   []string{"SERVICES=s3,sns,sqs"},
-	}
+	return &Localstack{resp.ID, dockerClient, ctx}, nil
 
-	hostConfig := &container.HostConfig{
-		PortBindings: nat.PortMap{
-			"4572/tcp": []nat.PortBinding{
-				{
-					HostIP:   "0.0.0.0",
-					HostPort: S3Port,
-				},
-			},
-			"4575/tcp": []nat.PortBinding{
-				{
-					HostIP:   "0.0.0.0",
-					HostPort: SNSPort,
-				},
-			},
-			"4576/tcp": []nat.PortBinding{
-				{
-					HostIP:   "0.0.0.0",
-					HostPort: SQSPort,
-				},
-			},
-		},
-	}
+}
 
-	resp, err := dockerClient.ContainerCreate(ctx, containerConfig, hostConfig, nil, "")
-	if err != nil {
-		return "nil", err
-	}
-
-	if err := dockerClient.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		return "nil", err
+// Start starts the LocalStack container
+func (l Localstack) Start() error {
+	if err := l.dockerClient.ContainerStart(l.dockerContext, l.ContainerID, types.ContainerStartOptions{}); err != nil {
+		return err
 	}
 
 	duration := time.Second * 5
 	time.Sleep(duration)
-	return resp.ID, nil
+	return nil
 }
 
-// Stop stop the docker container identified by the id string
-func Stop(id string) error {
+// Stop stops the LocalStack container
+func (l Localstack) Stop() error {
+	if err := l.dockerClient.ContainerStop(l.dockerContext, l.ContainerID, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func pullImage(dockerClient *client.Client, img string) error {
+	ctx := context.Background()
 	dockerClient, err := client.NewEnvClient()
 	if err != nil {
 		return err
 	}
-	if err := dockerClient.ContainerStop(context.Background(), id, nil); err != nil {
+
+	normalized, err := reference.ParseNormalizedNamed(img)
+	if err != nil {
+		return err
+	}
+
+	out, err := dockerClient.ImagePull(ctx, normalized.String(), types.ImagePullOptions{})
+	if err != nil {
+		return err
+	}
+	if _, err = io.Copy(os.Stdout, out); err != nil {
 		return err
 	}
 	return nil
+}
+
+func containerConfig(img string, serviceConfigs []*ServiceConfig) *container.Config {
+	sb := strings.Builder{}
+	sb.WriteString("SERVICES=")
+	names := make([]string, 0, len(serviceConfigs))
+	for _, s := range serviceConfigs {
+		names = append(names, s.Service.String())
+	}
+	sb.WriteString(strings.ToLower(strings.Join(names, ",")))
+	return &container.Config{
+		Image: img,
+		Env:   []string{sb.String()},
+	}
+}
+
+func hostConfig(serviceConfigs []*ServiceConfig) (*container.HostConfig, error) {
+	m := make(map[nat.Port][]nat.PortBinding)
+	for _, s := range serviceConfigs {
+		internalPort, binding, err := getMapping(s)
+		if err != nil {
+			return nil, err
+		}
+		m[internalPort] = binding
+	}
+
+	return &container.HostConfig{PortBindings: m}, nil
+}
+
+func getMapping(cfg *ServiceConfig) (nat.Port, []nat.PortBinding, error) {
+	def, err := getDefaultPort(cfg.Service)
+	if err != nil {
+		return "nil", nil, err
+	}
+	port := cfg.Port
+	if cfg.Port < 1 {
+		port = def
+	}
+	internalPort, err := nat.NewPort("tcp", strconv.Itoa(def))
+	if err != nil {
+		return "nil", nil, err
+	}
+	return internalPort, []nat.PortBinding{
+		{
+			HostIP:   "0.0.0.0",
+			HostPort: strconv.Itoa(port),
+		},
+	}, nil
 }

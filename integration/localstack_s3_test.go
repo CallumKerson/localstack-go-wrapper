@@ -1,12 +1,12 @@
 package integration
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/callumkerredwards/localstack-go-wrapper/localstack"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,7 +16,7 @@ func TestLocalstackS3Started(t *testing.T) {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: testCredentials,
 		Region:      testRegion,
-		Endpoint:    aws.String("http://localhost:" + localstack.S3Port),
+		Endpoint:    aws.String("http://localhost:" + strconv.Itoa(s3Port)), // uses custom s3 port
 		DisableSSL:  disableSSL,
 	})
 	if err != nil {
