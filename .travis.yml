@@ -1,0 +1,9 @@
+language: go
+
+go:
+- tip
+
+services:
+  - docker
+
+script: make
