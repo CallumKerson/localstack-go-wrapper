@@ -9,7 +9,7 @@ import (
 )
 
 // s3Port is a custom port
-const s3Port int = 33000
+const s3Port int = 5437
 
 func TestMain(m *testing.M) {
 	os.Exit(testMainWrapper(m))
