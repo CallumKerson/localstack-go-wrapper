@@ -18,14 +18,14 @@ func TestMain(m *testing.M) {
 func testMainWrapper(m *testing.M) int {
 	if !testing.Short() {
 		s3Config := &localstack.ServiceConfig{
-			Serv: localstack.S3,
-			Port: s3Port,
+			Service: localstack.S3,
+			Port:    s3Port,
 		}
 		sqsConfig := &localstack.ServiceConfig{
-			Serv: localstack.SQS,
+			Service: localstack.SQS,
 		}
 		snsConfig := &localstack.ServiceConfig{
-			Serv: localstack.SNS,
+			Service: localstack.SNS,
 		}
 		container, err := localstack.New(s3Config, sqsConfig, snsConfig)
 		if err != nil {

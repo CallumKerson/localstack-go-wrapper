@@ -4,8 +4,8 @@ import "fmt"
 
 // ServiceConfig allows the configuration of LocalStack Service to specify a custom port
 type ServiceConfig struct {
-	Serv Service
-	Port int
+	Service Service
+	Port    int
 }
 
 // Service represents a LocalStack service

@@ -24,23 +24,21 @@ func TestMain(m *testing.M) {
 }
 
 func testMainWrapper(m *testing.M) int {
-	if !testing.Short() {
-		s3Config := &localstack.ServiceConfig{
-			Serv: localstack.S3,
-			Port: 33000,
-		}
-		container, err := localstack.New(s3Config)
-		if err != nil {
-			log.Printf("Cannot create localstack, %v", err)
-			return 1
-		}
-		err = container.Start()
-		if err != nil {
-			log.Printf("Cannot start localstack, %v", err)
-			return 1
-		}
-		defer container.Stop()
-	}
+    s3Config := &localstack.ServiceConfig{
+        Service: localstack.S3,
+        Port: 33000,
+    }
+    container, err := localstack.New(s3Config)
+    if err != nil {
+        log.Printf("Cannot create localstack, %v", err)
+        return 1
+    }
+    err = container.Start()
+    if err != nil {
+        log.Printf("Cannot start localstack, %v", err)
+        return 1
+    }
+    defer container.Stop()
 	return m.Run()
 }
 ```

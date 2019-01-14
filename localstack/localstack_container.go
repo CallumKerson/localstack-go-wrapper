@@ -100,7 +100,7 @@ func containerConfig(img string, serviceConfigs []*ServiceConfig) *container.Con
 	sb.WriteString("SERVICES=")
 	names := make([]string, 0, len(serviceConfigs))
 	for _, s := range serviceConfigs {
-		names = append(names, s.Serv.String())
+		names = append(names, s.Service.String())
 	}
 	sb.WriteString(strings.ToLower(strings.Join(names, ",")))
 	return &container.Config{
@@ -123,7 +123,7 @@ func hostConfig(serviceConfigs []*ServiceConfig) (*container.HostConfig, error) 
 }
 
 func getMapping(cfg *ServiceConfig) (nat.Port, []nat.PortBinding, error) {
-	def, err := getDefaultPort(cfg.Serv)
+	def, err := getDefaultPort(cfg.Service)
 	if err != nil {
 		return "nil", nil, err
 	}
