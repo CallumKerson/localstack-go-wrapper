@@ -19,7 +19,7 @@ func testMainWrapper(m *testing.M) int {
 	if !testing.Short() {
 		s3Config := &localstack.ServiceConfig{
 			Service: localstack.S3,
-//			Port:    s3Port,
+			//			Port:    s3Port,
 		}
 		sqsConfig := &localstack.ServiceConfig{
 			Service: localstack.SQS,
