@@ -3,7 +3,7 @@ A wrapper around [LocalStack](https://github.com/localstack/localstack) for inte
 
 ### Prerequesites
 
-- [Go 1.11](https://golang.org/doc/go1.11) for module support
+- [Go 1.11](https://golang.org/doc/go1.11) for module support `$GO111MODULE=on`
 - [Docker](https://www.docker.com) installed and daemon running
 
 ### Usage
