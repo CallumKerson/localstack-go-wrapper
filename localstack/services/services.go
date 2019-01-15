@@ -32,6 +32,27 @@ const (
 	SecretsManager
 )
 
+// SupportedServices can be referenced to determine what services are supported
+var SupportedServices = []Service{
+	APIGateway,
+	Kinesis,
+	DynamoDB,
+	DynamoDBStreams,
+	S3,
+	Firehose,
+	Lambda,
+	SNS,
+	SQS,
+	Redshift,
+	ES,
+	SES,
+	Route53,
+	CloudFormation,
+	CloudWatch,
+	SSM,
+	SecretsManager,
+}
+
 // GetDefaultPort gets the default LocalStack port for the given service
 func GetDefaultPort(ser Service) (int, error) {
 	var port int
