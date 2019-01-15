@@ -6,6 +6,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/callumkerredwards/localstack-go-wrapper/localstack"
+	"github.com/callumkerredwards/localstack-go-wrapper/localstack/services"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
@@ -25,9 +26,9 @@ func TestCreatesContainer(t *testing.T) {
 func TestStartsContainer(t *testing.T) {
 	//given
 	s3Config := &services.ServiceConfig{
-			Service: services.S3,
-			Port:    9314,
-		}
+		Service: services.S3,
+		Port:    9314,
+	}
 	container, err := localstack.New(s3Config)
 	assert.NoError(t, err)
 
@@ -43,9 +44,9 @@ func TestStartsContainer(t *testing.T) {
 func TestStopsContainer(t *testing.T) {
 	//given
 	s3Config := &services.ServiceConfig{
-			Service: services.S3,
-			Port:    9315,
-		}
+		Service: services.S3,
+		Port:    9315,
+	}
 	container, err := localstack.New(s3Config)
 	assert.NoError(t, err)
 	err = container.Start()
