@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/docker/distribution/reference"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -16,7 +15,7 @@ import (
 )
 
 //ImageName provides the docker image name for LocalStack
-const ImageName = "localstack/localstack"
+const ImageName = "docker.io/localstack/localstack"
 
 // Localstack provides methods for starting and stoping a docker container of the latest
 // LocalStack image
@@ -88,16 +87,11 @@ func pullImage(dockerClient *client.Client, img string) error {
 		return err
 	}
 
-	normalized, err := reference.ParseNormalizedNamed(img)
+	_, err = dockerClient.ImagePull(ctx, img, types.ImagePullOptions{})
 	if err != nil {
 		return err
 	}
-
-	_, err = dockerClient.ImagePull(ctx, normalized.String(), types.ImagePullOptions{})
-	if err != nil {
-		return err
-	}
-	log.Printf("Successfully pulled image %s", normalized)
+	log.Printf("Successfully pulled image %s", img)
 	return nil
 }
 
