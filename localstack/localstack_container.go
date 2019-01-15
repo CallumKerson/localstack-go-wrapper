@@ -71,7 +71,6 @@ func (l Localstack) Start() error {
 	if err := l.dockerClient.ContainerStart(l.dockerContext, l.ContainerID, types.ContainerStartOptions{}); err != nil {
 		return err
 	}
-
 	duration := time.Second * 5
 	time.Sleep(duration)
 	return nil
@@ -82,6 +81,8 @@ func (l Localstack) Stop() error {
 	if err := l.dockerClient.ContainerStop(l.dockerContext, l.ContainerID, nil); err != nil {
 		return err
 	}
+	duration := time.Second * 5
+	time.Sleep(duration)
 	return nil
 }
 
