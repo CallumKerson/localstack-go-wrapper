@@ -1,7 +1,7 @@
 # test all
 .PHONY: test
 test: tidy
-	go test ./...
+	go test -v ./...
 
 # tidy dependencies
 .PHONY: tidy
