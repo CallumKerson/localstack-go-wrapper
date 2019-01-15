@@ -84,3 +84,7 @@ defaults. Remember to ensure that LocalStack is not running elsewhere if using d
 ### Make
 
 - `make` can be used to format, lint, install and test this library.
+
+### Operating systems
+
+Tested on macOS 10.13 (locally) and Linux Ubuntu (via [Travis CI](https://travis-ci.org)), but should work with any Go installation.
