@@ -10,6 +10,39 @@ A wrapper around [LocalStack](https://github.com/localstack/localstack) for inte
 
 ### Usage
 
+To start all LocalStack services on the default ports:
+```
+package demo
+
+import (
+	"log"
+	"os"
+	"testing"
+
+	"github.com/callumkerredwards/localstack-go-wrapper/localstack"
+)
+
+func TestMain(m *testing.M) {
+	os.Exit(testMainWrapper(m))
+}
+
+func testMainWrapper(m *testing.M) int {
+    container, err := localstack.New()
+    if err != nil {
+        log.Printf("Cannot create localstack, %v", err)
+        return 1
+    }
+    err = container.Start()
+    if err != nil {
+        log.Printf("Cannot start localstack, %v", err)
+        return 1
+    }
+    defer container.Stop()
+	return m.Run()
+}
+```
+
+To specify LocalStack services running on a particular port:
 ```
 package demo
 
