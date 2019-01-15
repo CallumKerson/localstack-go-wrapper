@@ -15,15 +15,15 @@ To start all LocalStack services on the default ports:
 package demo
 
 import (
-	"log"
-	"os"
-	"testing"
+    "log"
+    "os"
+    "testing"
 
-	"github.com/callumkerredwards/localstack-go-wrapper/localstack"
+    "github.com/callumkerredwards/localstack-go-wrapper/localstack"
 )
 
 func TestMain(m *testing.M) {
-	os.Exit(testMainWrapper(m))
+    os.Exit(testMainWrapper(m))
 }
 
 func testMainWrapper(m *testing.M) int {
@@ -38,7 +38,7 @@ func testMainWrapper(m *testing.M) int {
         return 1
     }
     defer container.Stop()
-	return m.Run()
+    return m.Run()
 }
 ```
 
@@ -47,15 +47,15 @@ To specify LocalStack services running on a particular port:
 package demo
 
 import (
-	"log"
-	"os"
-	"testing"
+    "log"
+    "os"
+    "testing"
 
-	"github.com/callumkerredwards/localstack-go-wrapper/localstack"
+    "github.com/callumkerredwards/localstack-go-wrapper/localstack"
 )
 
 func TestMain(m *testing.M) {
-	os.Exit(testMainWrapper(m))
+    os.Exit(testMainWrapper(m))
 }
 
 func testMainWrapper(m *testing.M) int {
@@ -74,7 +74,7 @@ func testMainWrapper(m *testing.M) int {
         return 1
     }
     defer container.Stop()
-	return m.Run()
+    return m.Run()
 }
 ```
 
