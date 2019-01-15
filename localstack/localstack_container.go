@@ -108,7 +108,6 @@ func pullImage(dockerClient *client.Client, img string) error {
 }
 
 func containerConfig(img string, serviceConfigs []*services.ServiceConfig) *container.Config {
-
 	conf := &container.Config{
 		Image: img,
 	}
@@ -128,17 +127,27 @@ func containerConfig(img string, serviceConfigs []*services.ServiceConfig) *cont
 
 func hostConfig(serviceConfigs []*services.ServiceConfig) (*container.HostConfig, error) {
 	m := make(map[nat.Port][]nat.PortBinding)
-	for _, s := range serviceConfigs {
-		internalPort, binding, err := getMapping(s)
-		if err != nil {
-			return nil, err
+	if len(serviceConfigs) > 0 {
+		for _, s := range serviceConfigs {
+			internalPort, binding, err := getMappingForServiceConfig(s)
+			if err != nil {
+				return nil, err
+			}
+			m[internalPort] = binding
 		}
-		m[internalPort] = binding
+	} else {
+		for _, s := range services.SupportedServices {
+			internalPort, binding, err := getMappingForService(s)
+			if err != nil {
+				return nil, err
+			}
+			m[internalPort] = binding
+		}
 	}
 	return &container.HostConfig{PortBindings: m}, nil
 }
 
-func getMapping(cfg *services.ServiceConfig) (nat.Port, []nat.PortBinding, error) {
+func getMappingForServiceConfig(cfg *services.ServiceConfig) (nat.Port, []nat.PortBinding, error) {
 	def, err := services.GetDefaultPort(cfg.Service)
 	if err != nil {
 		return "nil", nil, err
@@ -155,6 +164,23 @@ func getMapping(cfg *services.ServiceConfig) (nat.Port, []nat.PortBinding, error
 		{
 			HostIP:   "0.0.0.0",
 			HostPort: strconv.Itoa(port),
+		},
+	}, nil
+}
+
+func getMappingForService(s services.Service) (nat.Port, []nat.PortBinding, error) {
+	p, err := services.GetDefaultPort(s)
+	if err != nil {
+		return "nil", nil, err
+	}
+	internalPort, err := nat.NewPort("tcp", strconv.Itoa(p))
+	if err != nil {
+		return "nil", nil, err
+	}
+	return internalPort, []nat.PortBinding{
+		{
+			HostIP:   "0.0.0.0",
+			HostPort: strconv.Itoa(p),
 		},
 	}, nil
 }
