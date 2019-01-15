@@ -23,9 +23,11 @@ const ImageName = "docker.io/localstack/localstack"
 // Localstack provides methods for starting and stoping a docker container of the latest
 // LocalStack image
 type Localstack struct {
-	ContainerID   string
-	dockerClient  *client.Client
-	dockerContext context.Context
+	ContainerID     string
+	dockerClient    *client.Client
+	dockerContext   context.Context
+	containerConfig *container.Config
+	hostConfig      *container.HostConfig
 }
 
 // New pulls the latest LocalStack image, and creates a new container. It returns a new
@@ -60,7 +62,7 @@ func New(cfgs ...*services.ServiceConfig) (*Localstack, error) {
 		return nil, err
 	}
 
-	return &Localstack{resp.ID, dockerClient, ctx}, nil
+	return &Localstack{resp.ID, dockerClient, ctx, containerCfg, hostCfg}, nil
 
 }
 
@@ -106,17 +108,22 @@ func pullImage(dockerClient *client.Client, img string) error {
 }
 
 func containerConfig(img string, serviceConfigs []*services.ServiceConfig) *container.Config {
-	sb := strings.Builder{}
-	sb.WriteString("SERVICES=")
-	names := make([]string, 0, len(serviceConfigs))
-	for _, s := range serviceConfigs {
-		names = append(names, s.Service.String())
-	}
-	sb.WriteString(strings.ToLower(strings.Join(names, ",")))
-	return &container.Config{
+
+	conf := &container.Config{
 		Image: img,
-		Env:   []string{sb.String()},
 	}
+	sb := strings.Builder{}
+	if len(serviceConfigs) > 0 {
+		sb.WriteString("SERVICES=")
+		names := make([]string, 0, len(serviceConfigs))
+		for _, s := range serviceConfigs {
+			names = append(names, s.Service.String())
+		}
+		sb.WriteString(strings.ToLower(strings.Join(names, ",")))
+		conf.Env = []string{sb.String()}
+	}
+	return conf
+
 }
 
 func hostConfig(serviceConfigs []*services.ServiceConfig) (*container.HostConfig, error) {
