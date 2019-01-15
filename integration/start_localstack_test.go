@@ -21,12 +21,15 @@ func testMainWrapper(m *testing.M) int {
 			Service: localstack.S3,
 			Port:    s3Port,
 		}
+		log.Printf("Creating localstack S3 config with port %v", s3Port)
 		sqsConfig := &localstack.ServiceConfig{
 			Service: localstack.SQS,
 		}
+		log.Print("Creating localstack SQS config with port default port")
 		snsConfig := &localstack.ServiceConfig{
 			Service: localstack.SNS,
 		}
+		log.Print("Creating localstack SNS config with port default port")
 		container, err := localstack.New(s3Config, sqsConfig, snsConfig)
 		if err != nil {
 			log.Printf("Cannot create localstack, %v", err)

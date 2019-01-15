@@ -1,6 +1,8 @@
 package integration
 
 import (
+	"encoding/json"
+	"log"
 	"strconv"
 	"testing"
 
@@ -21,6 +23,10 @@ func TestLocalstackS3Started(t *testing.T) {
 	})
 	if err != nil {
 		t.Errorf("Could not create new AWS session: %v", err)
+	}
+	s, err := json.MarshalIndent(sess, "", "  ")
+	if err == nil {
+		log.Printf("AWS Session is %s", string(s))
 	}
 
 	//when

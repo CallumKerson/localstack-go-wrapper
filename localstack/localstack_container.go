@@ -2,7 +2,9 @@ package localstack
 
 import (
 	"context"
+	"encoding/json"
 	"io"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -39,9 +41,17 @@ func New(cfgs ...*ServiceConfig) (*Localstack, error) {
 	}
 
 	containerCfg := containerConfig(ImageName, cfgs)
+	c, err := json.MarshalIndent(containerCfg, "", "  ")
+	if err == nil {
+		log.Printf("Container config is %s", string(c))
+	}
 	hostCfg, err := hostConfig(cfgs)
 	if err != nil {
 		return nil, err
+	}
+	h, err := json.MarshalIndent(hostCfg.PortBindings, "", "  ")
+	if err == nil {
+		log.Printf("Host Config port bindings are %s", string(h))
 	}
 
 	ctx := context.Background()
@@ -118,7 +128,6 @@ func hostConfig(serviceConfigs []*ServiceConfig) (*container.HostConfig, error) 
 		}
 		m[internalPort] = binding
 	}
-
 	return &container.HostConfig{PortBindings: m}, nil
 }
 
