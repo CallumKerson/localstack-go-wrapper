@@ -24,7 +24,11 @@ func TestCreatesContainer(t *testing.T) {
 
 func TestStartsContainer(t *testing.T) {
 	//given
-	container, err := localstack.New()
+	s3Config := &services.ServiceConfig{
+			Service: services.S3,
+			Port:    9314,
+		}
+	container, err := localstack.New(s3Config)
 	assert.NoError(t, err)
 
 	//when
@@ -38,7 +42,11 @@ func TestStartsContainer(t *testing.T) {
 
 func TestStopsContainer(t *testing.T) {
 	//given
-	container, err := localstack.New()
+	s3Config := &services.ServiceConfig{
+			Service: services.S3,
+			Port:    9315,
+		}
+	container, err := localstack.New(s3Config)
 	assert.NoError(t, err)
 	err = container.Start()
 	assert.NoError(t, err)
