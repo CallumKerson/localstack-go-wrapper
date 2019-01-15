@@ -3,9 +3,7 @@ package localstack
 import (
 	"context"
 	"encoding/json"
-	"io"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -95,13 +93,11 @@ func pullImage(dockerClient *client.Client, img string) error {
 		return err
 	}
 
-	out, err := dockerClient.ImagePull(ctx, normalized.String(), types.ImagePullOptions{})
+	_, err = dockerClient.ImagePull(ctx, normalized.String(), types.ImagePullOptions{})
 	if err != nil {
 		return err
 	}
-	if _, err = io.Copy(os.Stdout, out); err != nil {
-		return err
-	}
+	log.Printf("Successfully pulled image %s", normalized)
 	return nil
 }
 
