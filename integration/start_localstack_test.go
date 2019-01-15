@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/callumkerredwards/localstack-go-wrapper/localstack"
+	"github.com/callumkerredwards/localstack-go-wrapper/localstack/services"
 )
 
 // s3Port is a custom port
@@ -17,17 +18,17 @@ func TestMain(m *testing.M) {
 
 func testMainWrapper(m *testing.M) int {
 	if !testing.Short() {
-		s3Config := &localstack.ServiceConfig{
-			Service: localstack.S3,
+		s3Config := &services.ServiceConfig{
+			Service: services.S3,
 			Port:    s3Port,
 		}
 		log.Printf("Creating localstack S3 config with port %v", s3Port)
-		sqsConfig := &localstack.ServiceConfig{
-			Service: localstack.SQS,
+		sqsConfig := &services.ServiceConfig{
+			Service: services.SQS,
 		}
 		log.Print("Creating localstack SQS config with port default port")
-		snsConfig := &localstack.ServiceConfig{
-			Service: localstack.SNS,
+		snsConfig := &services.ServiceConfig{
+			Service: services.SNS,
 		}
 		log.Print("Creating localstack SNS config with port default port")
 		container, err := localstack.New(s3Config, sqsConfig, snsConfig)

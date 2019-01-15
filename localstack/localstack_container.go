@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/callumkerredwards/localstack-go-wrapper/localstack/services"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -29,7 +30,7 @@ type Localstack struct {
 
 // New pulls the latest LocalStack image, and creates a new container. It returns a new
 // instance of LocalStack
-func New(cfgs ...*ServiceConfig) (*Localstack, error) {
+func New(cfgs ...*services.ServiceConfig) (*Localstack, error) {
 
 	dockerClient, err := client.NewEnvClient()
 	if err != nil {
@@ -104,7 +105,7 @@ func pullImage(dockerClient *client.Client, img string) error {
 	return nil
 }
 
-func containerConfig(img string, serviceConfigs []*ServiceConfig) *container.Config {
+func containerConfig(img string, serviceConfigs []*services.ServiceConfig) *container.Config {
 	sb := strings.Builder{}
 	sb.WriteString("SERVICES=")
 	names := make([]string, 0, len(serviceConfigs))
@@ -118,7 +119,7 @@ func containerConfig(img string, serviceConfigs []*ServiceConfig) *container.Con
 	}
 }
 
-func hostConfig(serviceConfigs []*ServiceConfig) (*container.HostConfig, error) {
+func hostConfig(serviceConfigs []*services.ServiceConfig) (*container.HostConfig, error) {
 	m := make(map[nat.Port][]nat.PortBinding)
 	for _, s := range serviceConfigs {
 		internalPort, binding, err := getMapping(s)
@@ -130,8 +131,8 @@ func hostConfig(serviceConfigs []*ServiceConfig) (*container.HostConfig, error) 
 	return &container.HostConfig{PortBindings: m}, nil
 }
 
-func getMapping(cfg *ServiceConfig) (nat.Port, []nat.PortBinding, error) {
-	def, err := getDefaultPort(cfg.Service)
+func getMapping(cfg *services.ServiceConfig) (nat.Port, []nat.PortBinding, error) {
+	def, err := services.GetDefaultPort(cfg.Service)
 	if err != nil {
 		return "nil", nil, err
 	}
